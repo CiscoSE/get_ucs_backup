@@ -111,12 +111,31 @@ except ImportError:
     print ('     *** ERROR - Module SYS not available. Please install and restart.')
     
 
+# ----------------------------------------------
+# IMPORT WEBBROWSER MODULE
+# ----------------------------------------------
+try:
+    import webbrowser
+except ImportError:
+    print ('     *** ERROR - Module WEBBROWSER not available. Please install and restart.')
+
     
 # ----------------------------------------------
 # DEFINE CLEAR SCREEN FUNCTION
 # ----------------------------------------------
 def cls():
     print ('\n'*50)
+
+
+# ----------------------------------------------
+# DEFINE BACKUP TYPES
+# ----------------------------------------------
+backup_type = []
+backup_type.append('fullstate')
+backup_type.append('config-logical')
+backup_type.append('config-system')
+backup_type.append('config-all')
+backup_type.append('I need help with the backup type.')
 
 
 # ----------------------------------------------
@@ -130,6 +149,15 @@ def args_help():
         print ('b=backup type [fullstate][config-logical][config-system][config-all]')
         print ('p=local folder path')
         print ('f=local filename\n\n\n')
+
+
+# ----------------------------------------------
+# FUNCTION TO DISPLAY BACKUP TYPES
+# ----------------------------------------------
+def display_backup_types():
+    print ('SELECT BACKUP TYPE')
+    for iLoop in range(5):
+        print (str(iLoop) + '. ' + backup_type[iLoop])
 
 
 
@@ -216,7 +244,7 @@ try:
     handle.login()
     print ('*** Successfully Logged in \n')
 except:
-    print ('*** ERROR - UNABLE TO LOGIN\n\n\n')
+    print ('*** ERROR - UNABLE TO LOGIN. CHECK CREDENTIALS AND TRY AGAIN.\n\n\n')
     exit()
 
     
@@ -224,20 +252,42 @@ except:
 # WHAT TYPE OF BACKUP SHOULD WE PERFORM
 # ----------------------------------------------
 if valid_args == False:
-    backup_type = []
-    backup_type.append('fullstate')
-    backup_type.append('config-logical')
-    backup_type.append('config-system')
-    backup_type.append('config-all')
 
-    print ('SELECT BACKUP TYPE')
-    for iLoop in range(4):
-        print (str(iLoop) + '. ' + backup_type[iLoop])
-
+    display_backup_types()
+    
     backup_choice = 5
-    while backup_choice > 3:
-        backup_choice = input('Enter backup type: ')
+    while True:
+        backup_choice = input('\nEnter backup type: ')
         backup_choice = int(backup_choice)
+        if backup_choice < 4:
+            break
+        elif backup_choice == 4:
+            print ("\n\n")
+            print ("Full state— A binary file that includes a snapshot of the entire system. You can use the file")
+            print ("generated from this backup to restore the system during disaster recovery. This file can")
+            print ("restore or rebuild the configuration on the original fabric interconnect, or recreate the")
+            print ("configuration on a different fabric interconnect. You cannot use this file for an import.\n")
+
+            print ("All configuration—An XML file that includes all system and logical configuration settings.")
+            print ("You can use the file generated from this backup to import these configuration settings to the")
+            print ("original fabric interconnect or to a different fabric interconnect. You cannot use this file for")
+            print ("a system restore.\n")
+
+            print ("System configuration—An XML file that includes all system configuration settings such as")
+            print ("roles, and locales. You can use the file generated from this backup to import these configuration")
+            print ("settings to the original fabric interconnect or to a different fabric interconnect. You cannot")
+            print ("use this file for a system restore.\n")
+
+            print ("Logical configuration—An XML file that includes all logical configuration settings such as")
+            print ("service profiles, VLANs, VSANs, pools, and policies. You can use the file generated from this")
+            print ("backup to import these configuration settings to the original fabric interconnect or to a")
+            print ("different fabric interconnect. You cannot use this file for a system restore.\n")
+
+            display_backup_types()
+            
+        else:
+            print ("Invalid backup choice")
+              
     backup_selection = backup_type[backup_choice]
     print ('*** ' + backup_type[backup_choice].upper() + ' Selected\n\n')
 
