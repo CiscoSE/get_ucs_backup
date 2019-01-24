@@ -124,7 +124,7 @@ except ImportError:
 # DEFINE CLEAR SCREEN FUNCTION
 # ----------------------------------------------
 def cls():
-    print ('\n'*50)
+    os.system('cls' if os.name=='nt' else 'clear')
 
 
 # ----------------------------------------------
