@@ -83,6 +83,8 @@
 #
 #
 
+
+
 # ----------------------------------------------
 # IMPORT UCSHANDLE FUNCTION FROM UCSMSDK MODULE
 # ----------------------------------------------
@@ -109,22 +111,15 @@ try:
     import sys
 except ImportError:
     print ('     *** ERROR - Module SYS not available. Please install and restart.')
-    
 
-# ----------------------------------------------
-# IMPORT WEBBROWSER MODULE
-# ----------------------------------------------
-try:
-    import webbrowser
-except ImportError:
-    print ('     *** ERROR - Module WEBBROWSER not available. Please install and restart.')
 
-    
+
 # ----------------------------------------------
 # DEFINE CLEAR SCREEN FUNCTION
 # ----------------------------------------------
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
+
 
 
 # ----------------------------------------------
@@ -138,8 +133,35 @@ backup_type.append('config-all')
 backup_type.append('I need help with the backup type.')
 
 
+
 # ----------------------------------------------
-# COMMAND LINE ARGUMENT HELP
+# DISPLAY BACKUP HELP
+# ----------------------------------------------
+def display_backup_help():
+    print("\n\n")
+    print("Full state— A binary file that includes a snapshot of the entire system. You can use the file")
+    print("generated from this backup to restore the system during disaster recovery. This file can")
+    print("restore or rebuild the configuration on the original fabric interconnect, or recreate the")
+    print("configuration on a different fabric interconnect. You cannot use this file for an import.\n")
+
+    print("All configuration—An XML file that includes all system and logical configuration settings.")
+    print("You can use the file generated from this backup to import these configuration settings to the")
+    print("original fabric interconnect or to a different fabric interconnect. You cannot use this file for")
+    print("a system restore.\n")
+
+    print("System configuration—An XML file that includes all system configuration settings such as")
+    print("roles, and locales. You can use the file generated from this backup to import these configuration")
+    print("settings to the original fabric interconnect or to a different fabric interconnect. You cannot")
+    print("use this file for a system restore.\n")
+
+    print("Logical configuration—An XML file that includes all logical configuration settings such as")
+    print("service profiles, VLANs, VSANs, pools, and policies. You can use the file generated from this")
+    print("backup to import these configuration settings to the original fabric interconnect or to a")
+    print("different fabric interconnect. You cannot use this file for a system restore.\n")
+
+
+# ----------------------------------------------
+# FUNCTION: DISPLAY COMMAND LINE ARGUMENT HELP
 # ----------------------------------------------
 def args_help():
         print ('\n COMMAND LINE ARGUMENT HELP')
@@ -152,7 +174,7 @@ def args_help():
 
 
 # ----------------------------------------------
-# FUNCTION TO DISPLAY BACKUP TYPES
+# FUNCTION: DISPLAY BACKUP TYPES
 # ----------------------------------------------
 def display_backup_types():
     print ('SELECT BACKUP TYPE')
@@ -162,189 +184,227 @@ def display_backup_types():
 
 
 # ----------------------------------------------
-# CLEAR SCREEN & DISPLAY HEADER
+# FUNCTION: DISPLAY OPENING DIALOG
 # ----------------------------------------------
-cls()
-print ('---------------------------------------------------')
-print ('        C I S C O   U C S   B A C K U P \n')
-print (' Utility will initiate a UCS backup of your choice ')
-print (' on a selected UCS domain. \n')
-print (' This should be done periodically and retained for ')
-print (' possible system restoration')
-print ('---------------------------------------------------\n\n\n')
+def display_welcome_message():
+    cls()
+    print('---------------------------------------------------')
+    print('        C I S C O   U C S   B A C K U P \n')
+    print(' Utility will initiate a UCS backup of your choice ')
+    print(' on a selected UCS domain. \n')
+    print(' This should be done periodically and retained for ')
+    print(' possible system restoration')
+    print('---------------------------------------------------\n\n\n')
 
 
 
 # ----------------------------------------------
-# CHECK COMMAND LINE ARGUMENTS
-# Force all command line arguments to be present
+# FUNCTION: CHECK COMMAND LINE ARGUMENTS
 # ----------------------------------------------
-valid_args = False
-if len(sys.argv) > 1:
-    if len(sys.argv) == 7:
-        print ('*** PARSING ARGUMENTS')
-        
-        for iLoop in range(1,len(sys.argv)):
-            tArg = sys.argv[iLoop]
-            if tArg[0:1] == 'd':
-                ucs_name = tArg[2:len(tArg)]
-                print ('UCS DOMAIN= ',ucs_name)
-                
-            elif tArg[0:1] == 'u':
-                login_name = tArg[2:len(tArg)]
-                print ('LOGIN NAME= ',login_name)
-                
-            elif tArg[0:1] == 's':
-                password = tArg[2:len(tArg)]
-                print ('PASSWORD=   ',password)
-                
-            elif tArg[0:1] == 'b':
-                backup_selection = tArg[2:len(tArg)]
-                print ('BACKUP TYPE=',backup_selection)
-                
-            elif tArg[0:1] == 'p':
-                local_dcty = tArg[2:len(tArg)]
-                print ('PATH=       ',local_dcty)
-                
-            elif tArg[0:1] == 'f':
-                local_filename = tArg[2:len(tArg)]
-                print ('FILENAME=   ',local_filename)
-                
-            else:
-                print ('*** ERROR - Invalid argument supplied')
-                print ('     Invalid Argument: ', tArg)
-                args_help()
-                exit()
-            
-        valid_args = True
-        print ('\n')
-        
-    else:
-        print ('*** ERROR - If arguments are supplied, then ALL arguments must be included.')
-        args_help()
+def check_for_arguments():
+    global ucs_name, login_name, password, backup_selection, local_dcty, local_filename, valid_args
+    valid_args = False
+    if len(sys.argv) > 1:
+        # ENSURE ALL 7 ARGUMENTS HAVE BEEN PASSED
+        if len(sys.argv) == 7:
+            print('*** PARSING ARGUMENTS')
+
+            for iLoop in range(1, len(sys.argv)):
+                tArg = sys.argv[iLoop]
+                # GET UCS DOMAIN
+                if tArg[0:1] == 'd':
+                    ucs_name = tArg[2:len(tArg)]
+                    print('UCS DOMAIN= ', ucs_name)
+
+                # GET UCS LOGIN ACCOUNT
+                elif tArg[0:1] == 'u':
+                    login_name = tArg[2:len(tArg)]
+                    print('LOGIN NAME= ', login_name)
+
+                # GET PASSWORD
+                elif tArg[0:1] == 's':
+                    password = tArg[2:len(tArg)]
+                    print('PASSWORD=   ', password)
+
+                # GET BACKUP TYPE
+                elif tArg[0:1] == 'b':
+                    backup_selection = tArg[2:len(tArg)]
+                    print('BACKUP TYPE=', backup_selection)
+
+                # GET PATH TO STORE BACKUP FILE
+                elif tArg[0:1] == 'p':
+                    local_dcty = tArg[2:len(tArg)]
+                    print('PATH=       ', local_dcty)
+
+                # GET FILENAME TO STORE BACKUP AS
+                elif tArg[0:1] == 'f':
+                    local_filename = tArg[2:len(tArg)]
+                    print('FILENAME=   ', local_filename)
+
+                # NOTIFY USER OF INVALID ARGUMENTS. DISPLAY HELP AND TERMINATE
+                else:
+                    print('*** ERROR - Invalid argument supplied')
+                    print('     Invalid Argument: ', tArg)
+                    args_help()
+                    exit()
+
+            valid_args = True
+            print('\n')
+
+        # WE NEED ALL 7 ARGUMENTS
+        else:
+            print('*** ERROR - If arguments are supplied, then ALL arguments must be included.')
+            args_help()
+            exit()
+
+
+
+# ----------------------------------------------
+# FUNCTION: GET UCS DOMAIN LOGIN CREDENTIALS
+# ----------------------------------------------
+def get_login_credentials():
+    global valid_args, ucs_name, login_name, password
+    if valid_args == False:
+        ucs_name = input ("UCS Domain FQDN or IP: ")
+        login_name = input("User/Admin account name: ")
+        password = input("Password: ")
+
+
+
+# ----------------------------------------------
+# FUNCTION: AUTHENTICATE TO UCS DOMAIN
+# ----------------------------------------------
+def authenticate_to_ucs_domain():
+    global handle
+    handle = UcsHandle(ucs_name, login_name, password)
+
+    try:
+        print ('\n*** Logging in')
+        handle.login()
+        print ('*** Successfully Logged in \n')
+    except:
+        print ('*** ERROR - UNABLE TO LOGIN. CHECK CREDENTIALS AND TRY AGAIN.\n\n\n')
         exit()
 
 
-# ----------------------------------------------
-# GET UCS DOMAIN LOGIN CREDENTIALS
-# ----------------------------------------------
-if valid_args == False:
-    ucs_name = input ("UCS Domain FQDN or IP: ")
-    login_name = input("User/Admin account name: ")
-    password = input("Password: ")
-
 
 # ----------------------------------------------
-# ATTEMPT TO LOGIN TO USE DOMAIN
+# FUNCTION: WHAT TYPE OF BACKUP TO PERFORM
 # ----------------------------------------------
-handle = UcsHandle(ucs_name, login_name, password)
+def what_type_of_backup():
+    global valid_args, backup_choice, backup_selection
+    if valid_args == False:
 
-try:
-    print ('*** Logging in')
-    handle.login()
-    print ('*** Successfully Logged in \n')
-except:
-    print ('*** ERROR - UNABLE TO LOGIN. CHECK CREDENTIALS AND TRY AGAIN.\n\n\n')
-    exit()
+        display_backup_types()
 
-    
-# ----------------------------------------------
-# WHAT TYPE OF BACKUP SHOULD WE PERFORM
-# ----------------------------------------------
-if valid_args == False:
+        backup_choice = 5
+        while True:
+            backup_choice = input('\nEnter backup type: ')
+            backup_choice = int(backup_choice)
+            if backup_choice < 4:
+                break
+            elif backup_choice == 4:
+                display_backup_help()
+                display_backup_types()
 
-    display_backup_types()
-    
-    backup_choice = 5
-    while True:
-        backup_choice = input('\nEnter backup type: ')
-        backup_choice = int(backup_choice)
-        if backup_choice < 4:
-            break
-        elif backup_choice == 4:
-            print ("\n\n")
-            print ("Full state— A binary file that includes a snapshot of the entire system. You can use the file")
-            print ("generated from this backup to restore the system during disaster recovery. This file can")
-            print ("restore or rebuild the configuration on the original fabric interconnect, or recreate the")
-            print ("configuration on a different fabric interconnect. You cannot use this file for an import.\n")
+            else:
+                print("Invalid backup choice")
 
-            print ("All configuration—An XML file that includes all system and logical configuration settings.")
-            print ("You can use the file generated from this backup to import these configuration settings to the")
-            print ("original fabric interconnect or to a different fabric interconnect. You cannot use this file for")
-            print ("a system restore.\n")
+        backup_selection = backup_type[backup_choice]
+        print('*** ' + backup_type[backup_choice].upper() + ' Selected\n\n')
 
-            print ("System configuration—An XML file that includes all system configuration settings such as")
-            print ("roles, and locales. You can use the file generated from this backup to import these configuration")
-            print ("settings to the original fabric interconnect or to a different fabric interconnect. You cannot")
-            print ("use this file for a system restore.\n")
-
-            print ("Logical configuration—An XML file that includes all logical configuration settings such as")
-            print ("service profiles, VLANs, VSANs, pools, and policies. You can use the file generated from this")
-            print ("backup to import these configuration settings to the original fabric interconnect or to a")
-            print ("different fabric interconnect. You cannot use this file for a system restore.\n")
-
-            display_backup_types()
-            
-        else:
-            print ("Invalid backup choice")
-              
-    backup_selection = backup_type[backup_choice]
-    print ('*** ' + backup_type[backup_choice].upper() + ' Selected\n\n')
 
 
 # ----------------------------------------------
 # WHERE SHOULD WE SAVE THE BACKUP LOCALLY
 # ----------------------------------------------
-if valid_args == False:
-    while 1:
-        local_dcty = input('Local directory to store backup: ')
+def where_to_save_backup():
+    global valid_args, local_dcty
+    if valid_args == False:
+        while 1:
+            local_dcty = input('Local directory to store backup: ')
+            if os.path.isdir(local_dcty):
+                print ('*** Verified Path: ' + local_dcty + '\n')
+                break
+            else:
+                print ('*** ERROR - Path could not be found.')
+    else:
         if os.path.isdir(local_dcty):
-            print ('*** Verified Path: ' + local_dcty + '\n')
-            break
+            print('*** Verified Path: ' + local_dcty + '\n')
         else:
-            print ('*** Path could not be found.')
+            print('*** ERROR - Path ['+local_dcty+'] could not be found. Correct path argument and restart.\n\n')
+            exit()
 
 
 # ----------------------------------------------
 # WHAT FILENAME SHOULD WE USE LOCALLY
 # ----------------------------------------------
-if valid_args == False:
-    local_filename = input ('Local Filename: ')
-    
-    # WAS A FILE EXTENSION INCLUDED
-    find_ext = local_filename.find(".")
-    
-    if find_ext > -1:
-        # WAS THE INCLUDED EXTENSION .XML?
-        if local_filename[len(local_filename)-4:len(local_filename)].lower() != ".xml":
-            print ('***ERROR - FILENAME MUST END IN .XML\n\n\n')
-            exit()
-            
-    #IF THERE'S NO EXTENSION, ADD .XML
-    else:
-        local_filename = local_filename + ".xml"
+def what_filename():
+    global valid_args, local_filename
+    if valid_args == False:
+        local_filename = input('Local Filename: ')
+
+        # WAS A FILE EXTENSION INCLUDED
+        find_ext = local_filename.find(".")
+
+        if find_ext > -1:
+            # WAS THE INCLUDED EXTENSION .XML?
+            if local_filename[len(local_filename) - 4:len(local_filename)].lower() != ".xml":
+                print('***ERROR - FILENAME MUST END IN .XML\n\n\n')
+                exit()
+
+        # IF THERE'S NO EXTENSION, ADD .XML
+        else:
+            local_filename = local_filename + ".xml"
+
 
 
 
 # ----------------------------------------------
+# LETS GET A BACKUP
 # ----------------------------------------------
-# GOOD TO GO - LETS GET A BACKUP
-# ----------------------------------------------
-# ----------------------------------------------
-
-try:
-    print ('*** Filename: ' + local_filename + '\n')
-    print ('*** Requesting backup from UCS Domain ' + ucs_name + '\n')
-    backup_ucs(handle, backup_selection, local_dcty, local_filename)
-    print ('\n*** BACKUP COMPLETE\n')
-except:
-    print ('*** ERROR - Unable to complete backup request')
+def get_the_backup():
+    global local_filename, ucs_name, handle, backup_selection, local_dcty
+    try:
+        print ('*** Filename: ' + local_filename + '\n')
+        print ('*** Requesting backup from UCS Domain ' + ucs_name + '\n')
+        backup_ucs(handle, backup_selection, local_dcty, local_filename)
+        print ('\n*** BACKUP COMPLETE\n')
+    except:
+        print ('*** ERROR - Unable to complete backup request')
 
 
 
-# --------------------------------
+#--------------------------------
 # LOGOUT OF THE UCS DOMAIN
 # --------------------------------
-handle.logout
-print ("LOGGED OUT OF " + ucs_name.upper()+'\n\n\n')
+def logout_ucs():
+    global handle
+    handle.logout
+    print("LOGGED OUT OF " + ucs_name.upper() + '\n\n\n')
 
+
+
+# ----------------------------------------------
+# ----------------------------------------------
+# LET'S GET STARTED
+# ----------------------------------------------
+# ----------------------------------------------
+
+display_welcome_message()
+
+check_for_arguments()
+
+get_login_credentials()
+
+authenticate_to_ucs_domain()
+
+what_type_of_backup()
+
+where_to_save_backup()
+
+what_filename()
+
+get_the_backup()
+
+logout_ucs()
