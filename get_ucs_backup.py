@@ -115,14 +115,6 @@ except ImportError:
 
 
 # ----------------------------------------------
-# DEFINE CLEAR SCREEN FUNCTION
-# ----------------------------------------------
-def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
-
-
-
-# ----------------------------------------------
 # DEFINE BACKUP TYPES
 # ----------------------------------------------
 backup_type = []
@@ -135,7 +127,15 @@ backup_type.append('I need help with the backup type.')
 
 
 # ----------------------------------------------
-# DISPLAY BACKUP HELP
+# FUNCTION: DEFINE CLEAR SCREEN FUNCTION
+# ----------------------------------------------
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+
+
+# ----------------------------------------------
+# FUNCTION: DISPLAY BACKUP HELP
 # ----------------------------------------------
 def display_backup_help():
     print("\n\n")
@@ -160,6 +160,7 @@ def display_backup_help():
     print("different fabric interconnect. You cannot use this file for a system restore.\n")
 
 
+
 # ----------------------------------------------
 # FUNCTION: DISPLAY COMMAND LINE ARGUMENT HELP
 # ----------------------------------------------
@@ -171,6 +172,7 @@ def args_help():
         print ('b=backup type [fullstate][config-logical][config-system][config-all]')
         print ('p=local folder path')
         print ('f=local filename\n\n\n')
+
 
 
 # ----------------------------------------------
@@ -316,7 +318,7 @@ def what_type_of_backup():
 
 
 # ----------------------------------------------
-# WHERE SHOULD WE SAVE THE BACKUP LOCALLY
+# FUNCTION: WHERE SHOULD WE SAVE THE BACKUP LOCALLY
 # ----------------------------------------------
 def where_to_save_backup():
     global valid_args, local_dcty
@@ -337,7 +339,7 @@ def where_to_save_backup():
 
 
 # ----------------------------------------------
-# WHAT FILENAME SHOULD WE USE LOCALLY
+# FUNCTION: WHAT FILENAME SHOULD WE USE LOCALLY
 # ----------------------------------------------
 def what_filename():
     global valid_args, local_filename
@@ -358,10 +360,8 @@ def what_filename():
             local_filename = local_filename + ".xml"
 
 
-
-
 # ----------------------------------------------
-# LETS GET A BACKUP
+# FUNCTION: LETS GET A BACKUP
 # ----------------------------------------------
 def get_the_backup():
     global local_filename, ucs_name, handle, backup_selection, local_dcty
@@ -374,15 +374,13 @@ def get_the_backup():
         print ('*** ERROR - Unable to complete backup request')
 
 
-
 #--------------------------------
-# LOGOUT OF THE UCS DOMAIN
+# FUNCTION: LOGOUT OF THE UCS DOMAIN
 # --------------------------------
 def logout_ucs():
     global handle
     handle.logout
     print("LOGGED OUT OF " + ucs_name.upper() + '\n\n\n')
-
 
 
 # ----------------------------------------------
